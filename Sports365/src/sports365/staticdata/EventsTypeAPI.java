@@ -17,7 +17,7 @@ import sports365.api.StaticDataSportAPI;
 
 public class EventsTypeAPI {
 	StaticDataSportAPI sports = new StaticDataSportAPI();
-	ElasticConnector connector = new ElasticConnector("http://157.245.218.120:9200","ZWxhc3RpYzo0MXJkdzVwWGNOU2V6RjR1Mm0wWA==");
+	ElasticConnector connector = new ElasticConnector("https://elastic.justgonow.com:9201","ZWxhc3RpYzpTeXM3M3hydjIx"); //"ZWxhc3RpYzo0MXJkdzVwWGNOU2V6RjR1Mm0wWA==");
 	ElasticsearchClient client;
 	ObjectMapper om = new ObjectMapper();
 

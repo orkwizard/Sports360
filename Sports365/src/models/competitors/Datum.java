@@ -2,8 +2,11 @@ package models.competitors;
 
 import com.fasterxml.jackson.annotation.*;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Datum {
     private Long id;
+    public String sid;
     private String name;
     private String type;
     private int eventTypeId;

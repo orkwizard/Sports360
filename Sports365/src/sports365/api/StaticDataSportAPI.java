@@ -17,6 +17,8 @@ public class StaticDataSportAPI {
 	URIBuilder url;
 	HttpGet request;
 	String perPage = "200";
+	String authorization;
+	String apikey;
 	
 	public enum EndPoints{
 		sports,
@@ -28,9 +30,21 @@ public class StaticDataSportAPI {
 		city
 	};
 	
-
 	public StaticDataSportAPI() {
+		this.authorization = "Basic anVzdGdvbm93LWVuOkZnVVBMXmo3RTY1SDVPZiY=";
+		this.apikey = "8954ab8892fd484b2b3cb463e8a565a2";
+	}
+	public StaticDataSportAPI(String language) {
 		// TODO Auto-generated constructor stub
+		if(language.equals("en")) {
+			this.authorization = "Basic anVzdGdvbm93LWVuOkZnVVBMXmo3RTY1SDVPZiY=";
+			this.apikey = "8954ab8892fd484b2b3cb463e8a565a2";
+		}
+		if(language.equals("es")) {
+			this.authorization = "Basic anVzdGdvbm93LXNwOnhsYnVHODFiNyFRajZsank=";
+			this.apikey="ca0255a896c4ca5ffc542353193e7111";
+			
+		}
 	}
 	
 	private String getEndpoint(EndPoints endpoint) {
@@ -73,12 +87,12 @@ public class StaticDataSportAPI {
 		};
 		
 		url = new URIBuilder(uri);
-		url.setParameter("apiKey", "8954ab8892fd484b2b3cb463e8a565a2");
+		url.setParameter("apiKey",this.apikey);
 		url.addParameter("perPage", perPage);
 		url.addParameter("page", page);
 		CloseableHttpClient client = HttpClientBuilder.create().build();
 		request = new HttpGet(url.build());
-		request.setHeader("Authorization", "Basic anVzdGdvbm93LWVuOkZnVVBMXmo3RTY1SDVPZiY=");
+		request.setHeader("Authorization",this.authorization);
 		CloseableHttpResponse response = client.execute(request);
 		HttpEntity entity = response.getEntity();
 		if(entity!=null) {

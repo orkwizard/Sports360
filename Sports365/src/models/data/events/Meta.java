@@ -1,7 +1,12 @@
 package models.data.events; 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Meta{
     public int current_page;
     public int from;
@@ -16,6 +21,7 @@ public class Meta{
     public String dateTo;
     public String title;
     public int apiId;
+    public int totalPages;
 	@Override
 	public String toString() {
 		return "Meta [current_page=" + current_page + ", from=" + from + ", last_page=" + last_page + ", links=" + links

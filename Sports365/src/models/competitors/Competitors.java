@@ -2,6 +2,8 @@ package models.competitors;
 
 import com.fasterxml.jackson.annotation.*;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Competitors {
     private Datum[] data;
     private Links links;

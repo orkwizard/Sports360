@@ -20,6 +20,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.introspect.TypeResolutionContext.Basic;
 
@@ -175,7 +176,9 @@ public class SearchEvent {
 		HttpEntity entity = response.getEntity();
 		if(entity!=null) {
 			 json =  EntityUtils.toString(entity);
-			 return om.readValue(json, Events.class);
+             Map<String, Object> aEvent = om.readValue(json, new TypeReference<Map<String, Object>>() {});
+             String cleanJson = om.writerWithDefaultPrettyPrinter().writeValueAsString(aEvent);
+			 return om.readValue(cleanJson, Events.class);
 		}
 		client.close();
 		return null;
@@ -202,7 +205,8 @@ public class SearchEvent {
 		CloseableHttpResponse response = client.execute(request);
 		HttpEntity entity = response.getEntity();
 		if(entity!=null) {
-			 return EntityUtils.toString(entity);
+			Map<String, Object> ob = om.readValue(EntityUtils.toString(entity), new TypeReference<Map<String,Object>>(){});
+			 return om.writerWithDefaultPrettyPrinter().writeValueAsString(ob);
 		}
 		client.close();
 		return null;
@@ -219,7 +223,7 @@ public class SearchEvent {
 		Events events = api.getEvents(EndPoints.byParticipant,parameters);
 		
 		int how_many_pages = events.meta.last_page;
-		
+		System.out.println(how_many_pages);
 		
 		Iterator<Datum> data =events.data.iterator();
 		while(data.hasNext()) {

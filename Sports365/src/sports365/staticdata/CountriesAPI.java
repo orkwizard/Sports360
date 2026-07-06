@@ -18,14 +18,22 @@ import sports365.api.StaticDataSportAPI;
 import sports365.api.StaticDataSportAPI.EndPoints;
 
 public class CountriesAPI {
-	StaticDataSportAPI sports = new StaticDataSportAPI();
-	ElasticConnector connector = new ElasticConnector("http://157.245.218.120:9200","ZWxhc3RpYzo0MXJkdzVwWGNOU2V6RjR1Mm0wWA==");
+	StaticDataSportAPI sports; // = new StaticDataSportAPI();
+	ElasticConnector connector = new ElasticConnector("https://elastic.justgonow.com:9201","ZWxhc3RpYzpTeXM3M3hydjIx"); //"ZWxhc3RpYzo0MXJkdzVwWGNOU2V6RjR1Mm0wWA==");
 	ElasticsearchClient client;
 	ObjectMapper om = new ObjectMapper();
+	String language;
+	String index;
 	
-	public CountriesAPI() throws ElasticsearchException, IOException {
+	public CountriesAPI(String language ) throws ElasticsearchException, IOException {
 		// TODO Auto-generated constructor stub
 		super();
+		sports = new StaticDataSportAPI(language);
+		if(language.equals("en"))
+			index ="sports365";
+		else
+			index="sports365_es";
+		
 		client = connector.getElasticClient();
 
 	}
@@ -44,7 +52,6 @@ public class CountriesAPI {
 	
 	public Cities getDataCities(String page, int country) throws URISyntaxException, IOException {
 		String entity = sports.getEntity(EndPoints.city, page, country);
-		
 		if(entity!=null) {
 			Cities c =  om.readValue(entity, Cities.class);
 			int size= c.data.size();
@@ -69,13 +76,13 @@ public class CountriesAPI {
         countries.addAll(first.data);
         for(int nextPage=2;nextPage<=lastPage;nextPage++) {
         	System.out.println("Adding page :" + nextPage);
-        	Countries page = getData(nextPage+"");
+        	Countries page = getData(String.valueOf(nextPage));
         	countries.addAll(page.data);
         }
 		return countries;
 	}
 	
-	public boolean addCitiesToElastic(ArrayList<models.cities.Datum> c)  throws ElasticsearchException, IOException {
+	public boolean addCitiesToElastic(ArrayList<models.cities.Datum> c)  throws IOException {
 		Iterator<models.cities.Datum> cities = c.iterator();
 		while(cities.hasNext()) {
 			models.cities.Datum city = cities.next();
@@ -85,11 +92,15 @@ public class CountriesAPI {
 			s.name = city.name;
 			s.type = city.type;
 			s.ancestor = city.country.name;
+			try {
 			IndexResponse response = client.index(i -> i
-					.index("sports365")
+					.index(index	)
 					.document(s)
 			);
-			System.out.println("Added City -: " + city.name + " Country ->" + city.country.name);
+			System.out.println("Added City -: " + s.name + "  ("+ s.id  +"SID-> " +s.sid+ ") Country ->" + s.ancestor);
+			}catch(ElasticsearchException e) {
+				e.printStackTrace();
+			}
 		}
 		return true;	
 	}
@@ -104,7 +115,7 @@ public class CountriesAPI {
 			s.name = country.name;
 			s.type = country.type;
 			IndexResponse response = client.index(i -> i
-					.index("sports365")
+					.index(index)
 					.document(s)
 			);
 			System.out.println("Added Country " + country.name);
@@ -113,7 +124,7 @@ public class CountriesAPI {
 	}
 	
 	public static void main(String[] args) throws IOException, URISyntaxException {
-		CountriesAPI api = new CountriesAPI();
+		CountriesAPI api = new CountriesAPI("en");
 		ArrayList<models.countries.Datum> countries = api.getCountries();
 		api.addCountriesToElastic(countries);
 		Iterator<models.countries.Datum> iterator = countries.iterator();	

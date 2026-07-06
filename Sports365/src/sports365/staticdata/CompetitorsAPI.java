@@ -24,13 +24,26 @@ import models.searcher.Searcher;
 import sports365.api.StaticDataSportAPI;
 
 public class CompetitorsAPI {
-	StaticDataSportAPI sports = new StaticDataSportAPI();
-	ElasticConnector connector = new ElasticConnector("http://157.245.218.120:9200","ZWxhc3RpYzo0MXJkdzVwWGNOU2V6RjR1Mm0wWA==");
+	StaticDataSportAPI sports; // = new StaticDataSportAPI();
+	ElasticConnector connector = new ElasticConnector("https://elastic.justgonow.com:9201","ZWxhc3RpYzpTeXM3M3hydjIx");
 	ElasticsearchClient client;
+	String language;
+	String index;
 	
 	public CompetitorsAPI() {
+		sports = new StaticDataSportAPI();
+		index = "sports365";
+	}
+	
+	public CompetitorsAPI(String language) {
 		// TODO Auto-generated constructor stub
 		super();
+		sports = new StaticDataSportAPI(language);
+		if(language.equals("en"))
+			index ="sports365";
+		else
+			index="sports365_es";
+		
 	}
 	
 	private Competitors getData(String page) throws IOException, URISyntaxException {
@@ -75,7 +88,7 @@ public class CompetitorsAPI {
 			s.eventType = getEventType(competitor.geteventTypeId());
 			
 			IndexResponse response = client.index(i -> i
-					.index("sports365")
+					.index(index)
 					.document(s)
 			);
 			System.out.println("Added " + competitor.getName());
@@ -117,10 +130,10 @@ public class CompetitorsAPI {
 	}
 	
 	public static void main(String[] args) throws IOException, URISyntaxException {
-		CompetitorsAPI api = new CompetitorsAPI();
-		ArrayList<models.competitors.Datum> competitors = api.getCompetitors();
-		api.addCompetitorstoElastic(competitors);
-		//api.autocomplete("Bulls");
+		CompetitorsAPI api = new CompetitorsAPI("en");
+		//ArrayList<models.competitors.Datum> competitors = api.getCompetitors();
+		//api.addCompetitorstoElastic(competitors);
+		api.autocomplete("New ");
 		api.connector.close();
 	}
 	

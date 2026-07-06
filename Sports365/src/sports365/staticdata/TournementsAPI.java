@@ -17,7 +17,7 @@ import models.tournements.Tournements;
 import sports365.api.StaticDataSportAPI;
 
 public class TournementsAPI {
-	StaticDataSportAPI sports = new StaticDataSportAPI();
+	StaticDataSportAPI sports = new StaticDataSportAPI("en");
 	ElasticConnector connector = new ElasticConnector("http://157.245.218.120:9200","ZWxhc3RpYzo0MXJkdzVwWGNOU2V6RjR1Mm0wWA==");
 	ElasticsearchClient client;
 	ObjectMapper om = new ObjectMapper();
